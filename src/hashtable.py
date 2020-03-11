@@ -54,7 +54,22 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        # Collision
+        if self.storage[index] is not None:
+            node = self.storage[index]
+            while node.next != None:
+                if node.key == key:
+                    break
+                node = node.next
+            if node.key == key:
+                node.value = value
+            else:
+                node.next = LinkedPair(key, value)
+        # No collision
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
 
 
@@ -66,7 +81,36 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        # No entry for given key
+        if self.storage[index] is None:
+            print("ERROR: Key not found.")
+            return
+
+        # One item in chain
+        if self.storage[index].next is None:
+            # Double check to make sure this isn't a collision
+            if self.storage[index].key == key:
+                self.storage[index] = None
+                return
+            else:
+                print("ERROR: Key not found.")
+                return
+
+        prev_node = self.storage[index]
+        curr_node = prev_node.next
+        next_node = curr_node.next
+
+        while True:
+            if curr_node.key == key or curr_node.next is None:
+                break
+
+            prev_node = curr_node
+            curr_node = next_node
+            next_node = curr_node.next
+
+        prev_node.next = next_node
 
 
     def retrieve(self, key):
@@ -77,7 +121,22 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            node = self.storage[index]
+            while True:
+                if node is None:
+                    print("ERROR: Value not found")
+                    return None
+                if node.key == key:                    
+                    return node.value
+                node = node.next
+                
+
+        
+        else:
+            return None
 
 
     def resize(self):
@@ -87,7 +146,18 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        old_storage = self.storage
+        self.capacity = self.capacity * 2
+        self.storage = [None] * self.capacity
+
+        for bucket_item in old_storage:
+            node = bucket_item
+            while node is not None:
+                self.insert(node.key, node.value)
+                node = node.next
+                
+
+            
 
 
 
