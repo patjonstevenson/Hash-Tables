@@ -59,8 +59,13 @@ class HashTable:
         if self.storage[index] is not None:
             node = self.storage[index]
             while node.next != None:
+                if node.key == key:
+                    break
                 node = node.next
-            node.next = LinkedPair(key, value)
+            if node.key == key:
+                node.value = value
+            else:
+                node.next = LinkedPair(key, value)
             
         else:
             self.storage[index] = LinkedPair(key, value)
@@ -77,32 +82,91 @@ class HashTable:
         '''
         index = self._hash_mod(key)
 
-        if self.storage[index] is not None:
-            node = self.storage[index]
-            while node.next.key != key:
-                node = node.next
-            # In case we have nodes where the index would be,
-            # but haven't actually added a node with that key.
-            # Hoping this will avoid an error where we try to
-            # do None.next.
-            if node.next.key != key:
-                print("ERROR: Key not found...")
+        # No entry for given key
+        if self.storage[index] is None:
+            print("ERROR: Key not found.")
+            return
+
+        # One item in chain
+        if self.storage[index].next is None:
+            # Double check to make sure this isn't a collision
+            if self.storage[index].key == key:
+                self.storage[index] = None
                 return
-            node.next = None
+            else:
+                print("ERROR: Key not found.")
+                return
+
+        prev_node = self.storage[index]
+        curr_node = prev_node.next
+        next_node = curr_node.next
+
+        while True:
+            if curr_node.key == key or curr_node.next is None:
+                break
+
+            prev_node = curr_node
+            curr_node = next_node
+            next_node = curr_node.next
+
+        prev_node.next = next_node
+
+
+
+
+
+        # if self.storage[index] is not None:
+        #     node = self.storage[index]
+        #     next_node = node.next
+        #     if next_node is None:
+        #         if node.key == key:
+        #             self.storage[index] = None
+        #     else:
+                # while 
+
+            # while next_node.key != key:
+                
+            #     prev = node
+            #     node = node.next
+            #     next_node = node.next
+            #     if next_node is None:
+            #         break
+            # # In case we have nodes where the index would be,
+            # # but haven't actually added a node with that key.
+            # # Hoping this will avoid an error where we try to
+            # # do None.next.
+            # if next_node.key != key:
+            #     print("ERROR: Key not found...")
+            #     return
+            
+            # # Connect nodes before and after
+            # node.next = next_node.next
+
+            # # Remove node
+            # node.next = None
 
             # NOTE: I'm wondering if the following is better due to
             # being more explicit. I like my first solution, above,
             # but I just want to make sure I'm following best practice.
-
+            # prev = node
             # while True:
-            #     if node.next.key == key:
-            #         node.next = None
+            #     if node.next is None:
+            #         break
+            #     if node.key == key:
+            #         prev.next = node.next
+            #         node = None
+
             #         break
             #     else:
+            #         prev = node
             #         node = node.next
+            #         if node.next is None:
+            #             break
+            
 
-        else:
-            print("WARNING: Key not found")
+
+        # else:
+        #     print("WARNING: Key not found")
 
 
 
