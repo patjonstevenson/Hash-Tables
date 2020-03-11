@@ -54,7 +54,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            node = self.storage[index]
+            while node.next != None:
+                node = node.next
+            node.next = LinkedPair(key, value)
+            
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
 
 
@@ -66,7 +75,35 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            node = self.storage[index]
+            while node.next.key != key:
+                node = node.next
+            # In case we have nodes where the index would be,
+            # but haven't actually added a node with that key.
+            # Hoping this will avoid an error where we try to
+            # do None.next.
+            if node.next.key != key:
+                print("ERROR: Key not found...")
+                return
+            node.next = None
+
+            # NOTE: I'm wondering if the following is better due to
+            # being more explicit. I like my first solution, above,
+            # but I just want to make sure I'm following best practice.
+
+            # while True:
+            #     if node.next.key == key:
+            #         node.next = None
+            #         break
+            #     else:
+            #         node = node.next
+
+        else:
+            print("WARNING: Key not found")
+
 
 
     def retrieve(self, key):
@@ -77,7 +114,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            node = self.storage[index]
+            while node.key != key:
+                node = node.next
+            return node.value
+        
+        else:
+            return None
 
 
     def resize(self):
@@ -87,7 +133,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        old_storage = self.storage
+        self.capacity = self.capacity * 2
+        self.storage = [None] * self.capacity
+
+        for bucket_item in old_storage:
+            self.insert(bucket_item.key, bucket_item.value)
 
 
 
