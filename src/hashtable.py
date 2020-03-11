@@ -56,6 +56,7 @@ class HashTable:
         '''
         index = self._hash_mod(key)
 
+        # Collision
         if self.storage[index] is not None:
             node = self.storage[index]
             while node.next != None:
@@ -66,7 +67,7 @@ class HashTable:
                 node.value = value
             else:
                 node.next = LinkedPair(key, value)
-            
+        # No collision
         else:
             self.storage[index] = LinkedPair(key, value)
 
@@ -112,64 +113,6 @@ class HashTable:
         prev_node.next = next_node
 
 
-
-
-
-        # if self.storage[index] is not None:
-        #     node = self.storage[index]
-        #     next_node = node.next
-        #     if next_node is None:
-        #         if node.key == key:
-        #             self.storage[index] = None
-        #     else:
-                # while 
-
-            # while next_node.key != key:
-                
-            #     prev = node
-            #     node = node.next
-            #     next_node = node.next
-            #     if next_node is None:
-            #         break
-            # # In case we have nodes where the index would be,
-            # # but haven't actually added a node with that key.
-            # # Hoping this will avoid an error where we try to
-            # # do None.next.
-            # if next_node.key != key:
-            #     print("ERROR: Key not found...")
-            #     return
-            
-            # # Connect nodes before and after
-            # node.next = next_node.next
-
-            # # Remove node
-            # node.next = None
-
-            # NOTE: I'm wondering if the following is better due to
-            # being more explicit. I like my first solution, above,
-            # but I just want to make sure I'm following best practice.
-            # prev = node
-            # while True:
-            #     if node.next is None:
-            #         break
-            #     if node.key == key:
-            #         prev.next = node.next
-            #         node = None
-
-            #         break
-            #     else:
-            #         prev = node
-            #         node = node.next
-            #         if node.next is None:
-            #             break
-            
-
-
-        # else:
-        #     print("WARNING: Key not found")
-
-
-
     def retrieve(self, key):
         '''
         Retrieve the value stored with the given key.
@@ -182,9 +125,15 @@ class HashTable:
 
         if self.storage[index] is not None:
             node = self.storage[index]
-            while node.key != key:
+            while True:
+                if node is None:
+                    print("ERROR: Value not found")
+                    return None
+                if node.key == key:                    
+                    return node.value
                 node = node.next
-            return node.value
+                
+
         
         else:
             return None
@@ -202,7 +151,13 @@ class HashTable:
         self.storage = [None] * self.capacity
 
         for bucket_item in old_storage:
-            self.insert(bucket_item.key, bucket_item.value)
+            node = bucket_item
+            while node is not None:
+                self.insert(node.key, node.value)
+                node = node.next
+                
+
+            
 
 
 
